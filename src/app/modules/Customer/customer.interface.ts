@@ -5,6 +5,7 @@ export interface ICustomer {
   email: string;
   phone?: number;
   address?: string;
+  bio?: string;
   user: Types.ObjectId;
   photo: string;
 }

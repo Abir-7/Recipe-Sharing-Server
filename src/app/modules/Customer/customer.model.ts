@@ -23,6 +23,11 @@ export const customerSchema = new Schema<ICustomer, CustomerModel>({
     required: false, // Optional field
     trim: true,
   },
+  bio: {
+    type: String,
+    required: false, // Optional field
+    trim: true,
+  },
   photo: {
     type: String,
     default:

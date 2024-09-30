@@ -17,7 +17,7 @@ const loginUser: RequestHandler = catchAsync(async (req, res) => {
 
 const resetPassLink: RequestHandler = catchAsync(async (req, res) => {
   const userEmail = req.body.email;
-  console.log(userEmail);
+
   const result = await AuthService.userResetPassLinkGenarator(userEmail);
 
   sendResponse(res, {

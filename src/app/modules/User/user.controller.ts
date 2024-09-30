@@ -27,14 +27,31 @@ const createAdmin = catchAsync(async (req, res) => {
   });
 });
 
-const updatePassword = catchAsync(async (req, res) => {
+const setNewPassword = catchAsync(async (req, res) => {
   const data = req.body;
-  console.log(data);
-  const result = await userService.updateUserPassword(
+
+  const result = await userService.setUserNewPassword(
     data?.token,
     data?.password
   );
-  console.log(result);
+
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
+    message: "Password Updated Successfully",
+  });
+});
+const passwordUpdate = catchAsync(async (req, res) => {
+  const data = req.body;
+  const userData = req.user;
+  console.log(userData, "cng pass");
+  const result = await userService.updatePassword(
+    userData,
+    data?.oldPass,
+    data.newPass
+  );
+
   sendResponse(res, {
     data: result,
     statusCode: 200,
@@ -43,4 +60,36 @@ const updatePassword = catchAsync(async (req, res) => {
   });
 });
 
-export const userController = { createCustomer, createAdmin, updatePassword };
+const meData = catchAsync(async (req, res) => {
+  const userData = req.user;
+  const result = await userService.myDataFromDb(userData);
+
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
+    message: "User data fetched successfully",
+  });
+});
+
+const updateProfile = catchAsync(async (req, res) => {
+  const userData = req.user;
+  const userInfo = req.body;
+  const result = await userService.userProfileUpdate(userData, userInfo);
+
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
+    message: "User data is updated successfully",
+  });
+});
+
+export const userController = {
+  createCustomer,
+  createAdmin,
+  setNewPassword,
+  meData,
+  updateProfile,
+  passwordUpdate,
+};

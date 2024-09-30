@@ -81,22 +81,19 @@ const createAdminIntoDb = async (data: IAdmin, password: string) => {
   }
 };
 
-// userService.ts
-
-const updateUserPassword = async (token: string, password: string) => {
+const setUserNewPassword = async (token: string, password: string) => {
   // Use the utility to decode the token
   const decoded = verifyToken(token);
-
-  const hashedPassword = await bcrypt.hash(
-    password,
-    Number(config.bcrypt_sault_round)
-  );
 
   const isUserExist = await User.findOne({ email: decoded.email });
 
   if (!isUserExist) {
     throw new AppError(httpStatus.BAD_REQUEST, "User not Found");
   }
+  const hashedPassword = await bcrypt.hash(
+    password,
+    Number(config.bcrypt_sault_round)
+  );
 
   const result = await User.findOneAndUpdate(
     { email: decoded.email },
@@ -107,8 +104,82 @@ const updateUserPassword = async (token: string, password: string) => {
   return result;
 };
 
+const updatePassword = async (
+  userData: JwtPayload,
+  oldPass: string,
+  newPass: string
+) => {
+  const isUserExist = await User.findOne({
+    email: userData.email,
+    _id: userData.id,
+  });
+  if (!isUserExist) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User not Found");
+  }
+
+  const isPasswordMatch = await bcrypt.compare(oldPass, isUserExist.password);
+  if (!isPasswordMatch) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Password not matched! Please check your password"
+    );
+  }
+  const hashedPassword = await bcrypt.hash(
+    newPass,
+    Number(config.bcrypt_sault_round)
+  );
+
+  const result = await User.findOneAndUpdate(
+    { email: userData.email },
+    { password: hashedPassword },
+    { new: true }
+  );
+  return result;
+};
+
+const myDataFromDb = async (userData: JwtPayload) => {
+  // Use the utility to decode the token
+
+  const data = await Customer.findOne({
+    email: userData.email,
+    user: userData.id,
+  });
+
+  return data;
+};
+
+const userProfileUpdate = async (
+  userData: JwtPayload,
+  dataInfo: Record<string, unknown>
+) => {
+  console.log(dataInfo, userData);
+
+  const isUserExist = await User.findOne({
+    email: userData.email,
+    _id: userData.id,
+  });
+
+  if (!isUserExist) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User not Found");
+  }
+
+  const data = await Customer.findOneAndUpdate(
+    {
+      email: userData.email,
+      user: userData.id,
+    },
+    dataInfo,
+    { new: true }
+  );
+
+  return data;
+};
+
 export const userService = {
+  updatePassword,
   createCustomerIntoDb,
   createAdminIntoDb,
-  updateUserPassword,
+  setUserNewPassword,
+  myDataFromDb,
+  userProfileUpdate,
 };
