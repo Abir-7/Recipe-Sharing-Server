@@ -29,7 +29,12 @@ const createAdmin = catchAsync(async (req, res) => {
 
 const updatePassword = catchAsync(async (req, res) => {
   const data = req.body;
-  const result = userService.updateUserPassword(data.token, data.password);
+  console.log(data);
+  const result = await userService.updateUserPassword(
+    data?.token,
+    data?.password
+  );
+  console.log(result);
   sendResponse(res, {
     data: result,
     statusCode: 200,

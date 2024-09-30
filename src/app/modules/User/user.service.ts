@@ -11,6 +11,7 @@ import bcrypt from "bcrypt";
 import { config } from "../../config";
 
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { verifyToken } from "../../utils/jwtUtils";
 
 const createCustomerIntoDb = async (data: ICustomer, password: string) => {
   const user: Partial<IUser> = {};
@@ -80,25 +81,29 @@ const createAdminIntoDb = async (data: IAdmin, password: string) => {
   }
 };
 
-const updateUserPassword = async (token: string, password: string) => {
-  const decoded = jwt.verify(
-    token,
-    config.jwt_secrete_key as string
-  ) as JwtPayload;
+// userService.ts
 
-  const hasedPassword = await bcrypt.hash(
+const updateUserPassword = async (token: string, password: string) => {
+  // Use the utility to decode the token
+  const decoded = verifyToken(token);
+
+  const hashedPassword = await bcrypt.hash(
     password,
     Number(config.bcrypt_sault_round)
   );
 
   const isUserExist = await User.findOne({ email: decoded.email });
+
   if (!isUserExist) {
     throw new AppError(httpStatus.BAD_REQUEST, "User not Found");
   }
+
   const result = await User.findOneAndUpdate(
     { email: decoded.email },
-    { password: hasedPassword }
+    { password: hashedPassword },
+    { new: true } // Option to return the updated document
   );
+
   return result;
 };
 

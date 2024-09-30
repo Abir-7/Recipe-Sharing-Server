@@ -18,4 +18,6 @@ router.post(
   userController.createAdmin
 );
 
+router.post("/update-pass", userController.updatePassword);
+
 export const UserRouter = router;
