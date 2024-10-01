@@ -85,6 +85,29 @@ const updateProfile = catchAsync(async (req, res) => {
   });
 });
 
+const blockProfile = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await userService.blockUserProfile(id);
+
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
+    message: "User blocked successfully",
+  });
+});
+const deleteProfile = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await userService.deletUserProfileDelet(id);
+
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
+    message: "User deleted successfully",
+  });
+});
+
 export const userController = {
   createCustomer,
   createAdmin,
@@ -92,4 +115,6 @@ export const userController = {
   meData,
   updateProfile,
   passwordUpdate,
+  blockProfile,
+  deleteProfile,
 };

@@ -34,4 +34,16 @@ router.patch(
 router.patch("/set-pass", userController.setNewPassword);
 router.patch("/update-pass", auth("user"), userController.passwordUpdate);
 
+router.patch(
+  "/block-user/:id",
+  auth("admin", "superAdmin"),
+  userController.blockProfile
+);
+
+router.patch(
+  "/delete-user/:id",
+  auth("admin", "superAdmin"),
+  userController.deleteProfile
+);
+
 export const UserRouter = router;

@@ -13,6 +13,8 @@ export const userSchema = new Schema<IUser>({
     required: [true, "User email is required"],
     unique: true,
   },
+  isDeleted: { type: Boolean, default: false },
+  isblocked: { type: Boolean, default: false },
   password: { type: String, required: [true, "User password is required"] },
   role: {
     type: String,
@@ -24,6 +26,7 @@ export const userSchema = new Schema<IUser>({
 
 userSchema.pre("save", async function (next) {
   const isUserExist = await User.findOne({ email: this.email });
+
   if (isUserExist) {
     throw new AppError(httpstatus.CONFLICT, "User already exist");
   }

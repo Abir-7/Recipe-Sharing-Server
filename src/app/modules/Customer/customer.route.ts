@@ -5,7 +5,10 @@ import { auth } from "../../middleware/auth/auth";
 
 const router = Router();
 
-router.patch("/:email", customerController.updateCustomer);
-router.get("/me", auth("admin", "user"), customerController.getCustomerInfo);
+router.get(
+  "/all-customer",
+  auth("admin", "superAdmin"),
+  customerController.getAllCustomerInfo
+);
 
-export const customerRoute = router;
+export const CustomerRoute = router;

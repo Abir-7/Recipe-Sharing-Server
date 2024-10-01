@@ -175,6 +175,51 @@ const userProfileUpdate = async (
   return data;
 };
 
+const blockUserProfile = async (id: string) => {
+  const isUserExist = await User.findOne({
+    _id: id,
+  });
+
+  if (!isUserExist) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User not Found");
+  }
+  if (isUserExist.isblocked) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User already blocked");
+  }
+  const data = await User.findOneAndUpdate(
+    {
+      _id: id,
+    },
+    { isblocked: true },
+    { new: true }
+  );
+
+  return data;
+};
+
+const deletUserProfileDelet = async (id: string) => {
+  const isUserExist = await User.findOne({
+    _id: id,
+  });
+
+  if (!isUserExist) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User not Found");
+  }
+  if (isUserExist.isDeleted) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User already deleted");
+  }
+
+  const data = await User.findOneAndUpdate(
+    {
+      _id: id,
+    },
+    { isDeleted: true },
+    { new: true }
+  );
+
+  return data;
+};
+
 export const userService = {
   updatePassword,
   createCustomerIntoDb,
@@ -182,4 +227,6 @@ export const userService = {
   setUserNewPassword,
   myDataFromDb,
   userProfileUpdate,
+  deletUserProfileDelet,
+  blockUserProfile,
 };
