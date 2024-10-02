@@ -45,7 +45,7 @@ const setNewPassword = catchAsync(async (req, res) => {
 const passwordUpdate = catchAsync(async (req, res) => {
   const data = req.body;
   const userData = req.user;
-  console.log(userData, "cng pass");
+
   const result = await userService.updatePassword(
     userData,
     data?.oldPass,

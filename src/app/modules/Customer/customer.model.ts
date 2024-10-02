@@ -5,8 +5,6 @@ export const customerSchema = new Schema<ICustomer, CustomerModel>({
   userName: {
     type: String,
     required: [true, "Username is required."],
-    unique: true,
-    trim: true,
   },
   email: {
     type: String,

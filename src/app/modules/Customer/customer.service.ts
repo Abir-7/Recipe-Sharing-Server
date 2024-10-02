@@ -19,7 +19,7 @@ const getAllCustomerInfoFromDb = async () => {
       },
     },
   ]);
-  console.log(result);
+
   return result;
 };
 
