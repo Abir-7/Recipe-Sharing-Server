@@ -28,6 +28,7 @@ const getMyRecipe = catchAsync(async (req, res) => {
   });
 });
 const getAllRecipe = catchAsync(async (req, res) => {
+  console.log("first");
   const result = await recipeService.getAllRecipeFromDb();
   sendResponse(res, {
     data: result,

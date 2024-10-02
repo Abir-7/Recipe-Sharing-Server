@@ -83,7 +83,7 @@ const getAllRecipeFromDb = async () => {
       },
     },
   ]);
-
+  console.log(recipes);
   return recipes;
 };
 

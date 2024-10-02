@@ -21,6 +21,7 @@ router.post(
 
 router.post(
   "/create-admin",
+  auth("admin", "superAdmin"),
   validationMiddleware(zodAdminSchema),
   userController.createAdmin
 );
