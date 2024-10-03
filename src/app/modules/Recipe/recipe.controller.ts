@@ -18,7 +18,7 @@ const addRecipe = catchAsync(async (req, res) => {
 
 const getMyRecipe = catchAsync(async (req, res) => {
   const userData = req.user;
-  console.log("kopa");
+
   const result = await recipeService.getMyRecipeFromDb(userData);
   sendResponse(res, {
     data: result,
@@ -28,7 +28,6 @@ const getMyRecipe = catchAsync(async (req, res) => {
   });
 });
 const getAllRecipe = catchAsync(async (req, res) => {
-  console.log("first");
   const result = await recipeService.getAllRecipeFromDb();
   sendResponse(res, {
     data: result,
@@ -61,10 +60,44 @@ const deleteRecipe = catchAsync(async (req, res) => {
   });
 });
 
+const getAllAdminRecipe = catchAsync(async (req, res) => {
+  const result = await recipeService.getAllRecipeAdminFromDb();
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
+    message: "Recipe fetched successfully",
+  });
+});
+
+const deleteAdminRecipe = catchAsync(async (req, res) => {
+  const { rId } = req.params;
+  const result = await recipeService.deleteAdminRecipe(rId);
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
+    message: "Recipe deleted successfully",
+  });
+});
+const unpublishAdminRecipe = catchAsync(async (req, res) => {
+  const { rId } = req.params;
+  const result = await recipeService.unpublishAdminRecipe(rId);
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
+    message: "Recipe deleted successfully",
+  });
+});
+
 export const recipeController = {
+  deleteAdminRecipe,
   addRecipe,
   getMyRecipe,
   getAllRecipe,
   recipeDetails,
   deleteRecipe,
+  getAllAdminRecipe,
+  unpublishAdminRecipe,
 };

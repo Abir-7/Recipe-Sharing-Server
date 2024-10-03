@@ -14,7 +14,7 @@ const getAllAdminInfo = catchAsync(async (req, res) => {
 
 const updateAdminProfile = catchAsync(async (req, res) => {
   const userId = req.params.id;
-  console.log(userId);
+
   const userData = req.body;
   const result = await adminService.adminProfileUpdate(userId, userData);
 

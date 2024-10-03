@@ -11,27 +11,14 @@ const recipeSchema = new Schema<IRecipe>({
     required: [true, "Customer name is required"],
     ref: "Customer", // Custom error message
   },
-  upVote: {
-    type: Number,
 
-    default: 0, // Optional default value
+  isDeleted: {
+    type: Boolean,
+    default: false,
   },
-  downVote: {
-    type: Number,
-
-    default: 0, // Optional default value
-  },
-  rating: {
-    avgRating: {
-      type: Number,
-
-      default: 0,
-    },
-    totalCount: {
-      type: Number,
-
-      default: 0,
-    },
+  isPublished: {
+    type: Boolean,
+    default: true,
   },
 });
 export const Recipe = model<IRecipe>("Recipe", recipeSchema);

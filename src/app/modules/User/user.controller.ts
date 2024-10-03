@@ -17,7 +17,7 @@ const createCustomer = catchAsync(async (req, res) => {
 
 const createAdmin = catchAsync(async (req, res) => {
   const { password, admin } = req.body;
-  console.log(password, admin, "gg");
+
   const result = await userService.createAdminIntoDb(admin, password);
 
   sendResponse(res, {

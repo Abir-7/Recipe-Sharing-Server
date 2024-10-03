@@ -17,7 +17,6 @@ const createCustomerIntoDb = async (data: ICustomer, password: string) => {
   const user: Partial<IUser> = {};
   const session = await mongoose.startSession();
 
-  console.log(data);
   try {
     session.startTransaction();
     user.email = data.email;
@@ -30,7 +29,7 @@ const createCustomerIntoDb = async (data: ICustomer, password: string) => {
 
     data.user = userData[0]._id;
     const result = await Customer.create([data], { session });
-    console.log(result);
+
     if (!userData.length) {
       throw new AppError(httpStatus.BAD_REQUEST, "Failed to create user");
     }

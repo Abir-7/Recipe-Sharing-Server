@@ -27,7 +27,6 @@ const ratingOperationIntoDb = async (
     oldComment,
     newComment,
   } = data;
-  console.log(recipeId, oldComment, newComment);
 
   if (
     !rating &&

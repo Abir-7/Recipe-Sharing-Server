@@ -39,7 +39,7 @@ const userLogin = async (logInData: T_UserLogin) => {
     photo = customer.photo;
   }
 
-  if (!customer) {
+  if (!customer && user.role !== "superAdmin") {
     throw new AppError(
       httpStatus.BAD_REQUEST,
       "customer not found! Please Check your email."
@@ -47,16 +47,19 @@ const userLogin = async (logInData: T_UserLogin) => {
   }
 
   //check customer has any valid subcription  from payment data
-  const payment = await Payment.findOne({
-    customer: customer._id,
-    paymentStatus: "paid",
-  }).sort({ createdAt: -1 });
-
   let hasValidSubscription = false;
-  if (payment && payment.validateFor) {
-    const currentDate = new Date();
-    if (new Date(payment.validateFor) > currentDate) {
-      hasValidSubscription = true;
+
+  if (customer) {
+    const payment = await Payment.findOne({
+      customer: customer._id,
+      paymentStatus: "paid",
+    }).sort({ createdAt: -1 });
+
+    if (payment && payment.validateFor) {
+      const currentDate = new Date();
+      if (new Date(payment.validateFor) > currentDate) {
+        hasValidSubscription = true;
+      }
     }
   }
 
@@ -66,7 +69,7 @@ const userLogin = async (logInData: T_UserLogin) => {
     email: user.email,
     role: user.role,
     id: user._id,
-    hasValidSubscription: hasValidSubscription,
+    hasValidSubscription: hasValidSubscription || false,
   };
 
   // create token
