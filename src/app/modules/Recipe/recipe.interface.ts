@@ -5,4 +5,5 @@ export interface IRecipe {
   customer: Types.ObjectId;
   isDeleted: boolean;
   isPublished: boolean;
+  isPremium: boolean;
 }

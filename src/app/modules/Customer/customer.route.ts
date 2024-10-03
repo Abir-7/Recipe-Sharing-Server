@@ -10,7 +10,7 @@ router.get(
   auth("admin", "superAdmin"),
   customerController.getAllCustomerInfo
 );
-
+router.get("/dashboard", auth("user"), customerController.userDashboard);
 router.patch("/follow-user", auth("user"), customerController.followUser);
 router.patch("/unfollow-user", auth("user"), customerController.unfollowUser);
 

@@ -39,8 +39,19 @@ const unfollowUser = catchAsync(async (req, res) => {
     message: "you unfollowed successfully",
   });
 });
+const userDashboard = catchAsync(async (req, res) => {
+  const myData = req.user;
+  const result = await customerService.userDashboardData(myData.id);
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
+    message: "Dashboard data fethed successfully",
+  });
+});
 
 export const customerController = {
+  userDashboard,
   getAllCustomerInfo,
   followUser,
   unfollowUser,

@@ -38,10 +38,10 @@ export const customerSchema = new Schema<ICustomer, CustomerModel>({
   },
 
   followers: [
-    { type: mongoose.Schema.Types.ObjectId, default: [], ref: "User" },
+    { type: mongoose.Schema.Types.ObjectId, default: [], ref: "Customer" },
   ],
   following: [
-    { type: mongoose.Schema.Types.ObjectId, default: [], ref: "User" },
+    { type: mongoose.Schema.Types.ObjectId, default: [], ref: "Customer" },
   ],
 });
 

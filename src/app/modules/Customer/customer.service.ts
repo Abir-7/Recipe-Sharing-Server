@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
 import { Customer } from "./customer.model";
 import mongoose from "mongoose";
+import { Recipe } from "../Recipe/recipe.model";
 
 const getAllCustomerInfoFromDb = async () => {
   const result = await Customer.aggregate([
@@ -88,8 +89,22 @@ const unfollowUser = async (mineId: string, userId: string) => {
   return result;
 };
 
+const userDashboardData = async (mineId: string) => {
+  const mydata = await Customer.findOne({ user: mineId })
+    .populate("followers", "userName email photo")
+    .populate("following", "userName email photo");
+
+  if (!mydata) {
+    throw new Error("User not Found");
+  }
+
+  const myRacipe = await Recipe.find({ customer: mydata._id });
+  return { myRacipe, mydata };
+};
+
 export const customerService = {
   getAllCustomerInfoFromDb,
+  userDashboardData,
   followUser,
   unfollowUser,
 };

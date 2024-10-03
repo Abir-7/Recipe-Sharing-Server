@@ -20,5 +20,9 @@ const recipeSchema = new Schema<IRecipe>({
     type: Boolean,
     default: true,
   },
+  isPremium: {
+    type: Boolean,
+    default: false,
+  },
 });
 export const Recipe = model<IRecipe>("Recipe", recipeSchema);
