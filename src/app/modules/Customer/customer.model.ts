@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 import { CustomerModel, ICustomer } from "./customer.interface";
 
 export const customerSchema = new Schema<ICustomer, CustomerModel>({
@@ -36,6 +36,21 @@ export const customerSchema = new Schema<ICustomer, CustomerModel>({
     ref: "User",
     required: [true, "User reference is required."],
   },
+
+  followers: [
+    { type: mongoose.Schema.Types.ObjectId, default: [], ref: "User" },
+  ],
+  following: [
+    { type: mongoose.Schema.Types.ObjectId, default: [], ref: "User" },
+  ],
+});
+
+customerSchema.virtual("followerCount").get(function () {
+  return this.followers.length;
+});
+
+customerSchema.virtual("followingCount").get(function () {
+  return this.following.length;
 });
 
 customerSchema.statics.isCustomerExist = async function (email: string) {

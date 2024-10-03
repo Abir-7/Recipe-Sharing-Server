@@ -14,6 +14,34 @@ const getAllCustomerInfo = catchAsync(async (req, res) => {
   });
 });
 
+const followUser = catchAsync(async (req, res) => {
+  const { userID } = req.body;
+  const myData = req.user;
+  const result = await customerService.followUser(myData.id, userID);
+
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
+    message: "you followed successfully",
+  });
+});
+
+const unfollowUser = catchAsync(async (req, res) => {
+  const { userID } = req.body;
+  const myData = req.user;
+  const result = await customerService.unfollowUser(myData.id, userID);
+
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
+    message: "you unfollowed successfully",
+  });
+});
+
 export const customerController = {
   getAllCustomerInfo,
+  followUser,
+  unfollowUser,
 };

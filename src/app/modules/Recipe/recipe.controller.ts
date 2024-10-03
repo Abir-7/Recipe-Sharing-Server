@@ -18,7 +18,7 @@ const addRecipe = catchAsync(async (req, res) => {
 
 const getMyRecipe = catchAsync(async (req, res) => {
   const userData = req.user;
-
+  console.log("kopa");
   const result = await recipeService.getMyRecipeFromDb(userData);
   sendResponse(res, {
     data: result,
@@ -39,7 +39,8 @@ const getAllRecipe = catchAsync(async (req, res) => {
 });
 const recipeDetails = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await recipeService.recipeDetailsFromDb(id);
+  const authEmail = req.user?.email;
+  const result = await recipeService.recipeDetailsFromDb(id, authEmail);
   sendResponse(res, {
     data: result,
     statusCode: 200,
@@ -47,9 +48,23 @@ const recipeDetails = catchAsync(async (req, res) => {
     message: "Recipe details fetched successfully",
   });
 });
+
+const deleteRecipe = catchAsync(async (req, res) => {
+  const { rId } = req.params;
+  const authEmail = req.user?.email;
+  const result = await recipeService.deleteRecipe(rId, authEmail);
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
+    message: "Recipe deleted successfully",
+  });
+});
+
 export const recipeController = {
   addRecipe,
   getMyRecipe,
   getAllRecipe,
   recipeDetails,
+  deleteRecipe,
 };

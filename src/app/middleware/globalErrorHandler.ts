@@ -10,7 +10,7 @@ import {
 import AppError from "../errors/AppError";
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  console.log(err, "gggg");
+  console.log(err.message, "gggg");
   let statusCode = 500;
   let message = "something went wrong";
 

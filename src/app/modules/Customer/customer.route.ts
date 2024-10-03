@@ -11,4 +11,7 @@ router.get(
   customerController.getAllCustomerInfo
 );
 
+router.patch("/follow-user", auth("user"), customerController.followUser);
+router.patch("/unfollow-user", auth("user"), customerController.unfollowUser);
+
 export const CustomerRoute = router;

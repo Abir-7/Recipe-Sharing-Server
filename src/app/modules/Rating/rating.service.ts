@@ -4,6 +4,7 @@ import { IRating } from "./rating.interface";
 import { Types } from "mongoose";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
+import { Customer } from "../Customer/customer.model";
 
 const ratingOperationIntoDb = async (
   userData: JwtPayload,
@@ -42,12 +43,11 @@ const ratingOperationIntoDb = async (
   if (!recipeId) {
     throw new Error("Recipe ID is required.");
   }
-
-  const customerId = userData.id;
-
-  if (!customerId) {
+  const customerData = await Customer.findOne({ user: userData.id });
+  if (!customerData) {
     throw new Error("Customer ID is required.");
   }
+  const customerId = customerData._id;
 
   // Check if the user already rated this recipe
   const existingRating = await Rating.findOne({

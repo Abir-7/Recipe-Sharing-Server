@@ -1,4 +1,7 @@
+import httpStatus from "http-status";
+import AppError from "../../errors/AppError";
 import { Customer } from "./customer.model";
+import mongoose from "mongoose";
 
 const getAllCustomerInfoFromDb = async () => {
   const result = await Customer.aggregate([
@@ -33,6 +36,60 @@ const getAllCustomerInfoFromDb = async () => {
   return result;
 };
 
+const followUser = async (mineId: string, userId: string) => {
+  const mydata = await Customer.findOne({ user: mineId });
+  if (!mydata) {
+    throw new Error("User not Found");
+  }
+
+  if (mydata?._id.toString() === userId) {
+    throw new AppError(httpStatus.BAD_REQUEST, "you can not follow yourself");
+  }
+
+  const result = await Customer.findByIdAndUpdate(
+    mydata?._id,
+    { $addToSet: { following: userId } }, // Prevent duplicates
+    { new: true }
+  );
+
+  // Add current user to the target user's followers list
+  await Customer.findByIdAndUpdate(
+    userId,
+    { $addToSet: { followers: mydata._id } },
+    { new: true }
+  );
+
+  return result;
+};
+
+const unfollowUser = async (mineId: string, userId: string) => {
+  const mydata = await Customer.findOne({ user: mineId });
+  if (!mydata) {
+    throw new Error("User not Found");
+  }
+
+  if (mydata?._id.toString() === userId) {
+    throw new AppError(httpStatus.BAD_REQUEST, "you can not unfollow yourself");
+  }
+
+  const result = await Customer.findByIdAndUpdate(
+    mydata?._id,
+    { $pull: { following: userId } }, // Remove the user from following list
+    { new: true }
+  );
+
+  // Remove current user from the target user's followers list
+  await Customer.findByIdAndUpdate(
+    userId,
+    { $pull: { followers: mydata._id } },
+    { new: true }
+  );
+
+  return result;
+};
+
 export const customerService = {
   getAllCustomerInfoFromDb,
+  followUser,
+  unfollowUser,
 };

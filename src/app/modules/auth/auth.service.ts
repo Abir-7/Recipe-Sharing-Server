@@ -9,6 +9,7 @@ import { config } from "../../config";
 import { User } from "../User/user.model";
 import { Customer } from "../Customer/customer.model";
 import { sendMail } from "../../utils/nodeMailer";
+import { Payment } from "../Payment/payment.model";
 
 const userLogin = async (logInData: T_UserLogin) => {
   //check if user exist
@@ -19,6 +20,7 @@ const userLogin = async (logInData: T_UserLogin) => {
       "User not found! Please Check your email."
     );
   }
+
   //check password is matched or not
   const isPasswordMatch = await bcrypt.compare(
     logInData.password,
@@ -36,12 +38,35 @@ const userLogin = async (logInData: T_UserLogin) => {
   if (customer && customer.photo) {
     photo = customer.photo;
   }
-  //createing user data to include in token
+
+  if (!customer) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "customer not found! Please Check your email."
+    );
+  }
+
+  //check customer has any valid subcription  from payment data
+  const payment = await Payment.findOne({
+    customer: customer._id,
+    paymentStatus: "paid",
+  }).sort({ createdAt: -1 });
+
+  let hasValidSubscription = false;
+  if (payment && payment.validateFor) {
+    const currentDate = new Date();
+    if (new Date(payment.validateFor) > currentDate) {
+      hasValidSubscription = true;
+    }
+  }
+
+  // Creating user data to include in token
   const userJWtData = {
     photo: photo,
     email: user.email,
     role: user.role,
     id: user._id,
+    hasValidSubscription: hasValidSubscription,
   };
 
   // create token

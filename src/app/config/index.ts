@@ -11,4 +11,7 @@ export const config = {
   jwt_secrete_date: process.env.JWT_ACCESS_EXPIRES_IN,
   email_pass: process.env.EMAIL_PASS,
   user_email: process.env.EMAIL_USER,
+  Signature_Key: process.env.Signature_Key,
+  Store_ID: process.env.Store_ID,
+  Api_EndPoint: process.env.Api_EndPoint,
 };
