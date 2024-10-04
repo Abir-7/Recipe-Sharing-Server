@@ -4,7 +4,7 @@ import { recipeService } from "./recipe.service";
 
 const addRecipe = catchAsync(async (req, res) => {
   const userData = req.user;
-  const recipe = req.body.recipe;
+  const recipe = req.body;
 
   const result = await recipeService.addRecipeIntoDb(userData, recipe);
 
@@ -18,8 +18,29 @@ const addRecipe = catchAsync(async (req, res) => {
 
 const getMyRecipe = catchAsync(async (req, res) => {
   const userData = req.user;
+  // Extract search, sort, and category from query parameters
+  const {
+    search = "",
+    sort = "",
+    category = "",
+    currentPage = 1,
+    pageSize = 10,
+  } = req.query as {
+    search?: string;
+    sort?: string;
+    category?: string;
+    currentPage?: number;
+    pageSize?: number;
+  };
 
-  const result = await recipeService.getMyRecipeFromDb(userData);
+  const result = await recipeService.getMyRecipeFromDb(
+    userData,
+    search,
+    sort,
+    category,
+    currentPage,
+    pageSize
+  );
   sendResponse(res, {
     data: result,
     statusCode: 200,
@@ -28,7 +49,16 @@ const getMyRecipe = catchAsync(async (req, res) => {
   });
 });
 const getAllRecipe = catchAsync(async (req, res) => {
-  const result = await recipeService.getAllRecipeFromDb();
+  const {
+    search = "",
+    sort = "",
+    category = "",
+  } = req.query as {
+    search?: string;
+    sort?: string;
+    category?: string;
+  };
+  const result = await recipeService.getAllRecipeFromDb(search, sort, category);
   sendResponse(res, {
     data: result,
     statusCode: 200,
@@ -91,6 +121,16 @@ const unpublishAdminRecipe = catchAsync(async (req, res) => {
   });
 });
 
+const getTopRecipe = catchAsync(async (req, res) => {
+  const result = await recipeService.getTopRecipesByLikes();
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
+    message: "Top Recipe fetched successfully",
+  });
+});
+
 export const recipeController = {
   deleteAdminRecipe,
   addRecipe,
@@ -100,4 +140,5 @@ export const recipeController = {
   deleteRecipe,
   getAllAdminRecipe,
   unpublishAdminRecipe,
+  getTopRecipe,
 };

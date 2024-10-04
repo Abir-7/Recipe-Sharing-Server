@@ -102,9 +102,18 @@ const userDashboardData = async (mineId: string) => {
   return { myRacipe, mydata };
 };
 
+const getTopFollowerCustomer = async () => {
+  const topFollowerCustomer = await Customer.find()
+    .sort({ followers: -1 })
+    .limit(4);
+
+  return topFollowerCustomer;
+};
+
 export const customerService = {
   getAllCustomerInfoFromDb,
   userDashboardData,
   followUser,
   unfollowUser,
+  getTopFollowerCustomer,
 };

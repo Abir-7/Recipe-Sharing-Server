@@ -4,7 +4,7 @@ import { customerController } from "./customer.controller";
 import { auth } from "../../middleware/auth/auth";
 
 const router = Router();
-
+router.get("/top-follower", customerController.userWithTopFollower);
 router.get(
   "/all-customer",
   auth("admin", "superAdmin"),

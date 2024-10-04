@@ -12,6 +12,8 @@ router.get(
 
 router.post("/add-recipe", auth("user"), recipeController.addRecipe);
 
+router.get("/top-recipe", recipeController.getTopRecipe);
+
 router.get("/my-recipe", auth("user"), recipeController.getMyRecipe);
 router.get(
   "/:id",

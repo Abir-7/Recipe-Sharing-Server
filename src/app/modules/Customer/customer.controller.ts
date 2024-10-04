@@ -50,9 +50,20 @@ const userDashboard = catchAsync(async (req, res) => {
   });
 });
 
+const userWithTopFollower = catchAsync(async (req, res) => {
+  const result = await customerService.getTopFollowerCustomer();
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
+    message: "Dashboard data fethed successfully",
+  });
+});
+
 export const customerController = {
   userDashboard,
   getAllCustomerInfo,
   followUser,
   unfollowUser,
+  userWithTopFollower,
 };

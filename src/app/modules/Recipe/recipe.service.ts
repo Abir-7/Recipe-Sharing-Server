@@ -4,25 +4,73 @@ import { Recipe } from "./recipe.model";
 import mongoose, { Types } from "mongoose";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
+import { IRecipe } from "./recipe.interface";
 
-const addRecipeIntoDb = async (userData: JwtPayload, recipe: string) => {
+const addRecipeIntoDb = async (
+  userData: JwtPayload,
+  recipe: Partial<IRecipe>
+) => {
   const customerData = await Customer.findOne({ email: userData.email });
-  const data = { recipe, customer: customerData?._id };
+  const data = { ...recipe, customer: customerData?._id };
+  console.log(data);
   const result = await Recipe.create(data);
   return result;
 };
 
-const getMyRecipeFromDb = async (userData: JwtPayload) => {
+const getMyRecipeFromDb = async (
+  userData: JwtPayload,
+  search: string,
+  sort: string,
+  category: string,
+  currentPage: number,
+  pageSize: number
+) => {
   const customerData = await Customer.findOne({ email: userData.email });
 
+  const matchConditions: any = {
+    customer: customerData?._id,
+    isDeleted: false,
+    isPublished: true,
+  };
+
+  // Add category filter if it's provided
+  if (category) {
+    matchConditions.category = category;
+  }
+  const totalRecipes = await Recipe.countDocuments(matchConditions);
   const recipe = await Recipe.aggregate([
     {
-      $match: {
-        customer: customerData?._id,
-        isDeleted: false,
-        isPublished: true,
-      },
+      $match: matchConditions,
     },
+    // Add search filter if 'search' is provided
+    ...(search
+      ? [
+          {
+            $match: {
+              $or: [
+                {
+                  title: {
+                    $regex: search, // Search by title
+                    $options: "i", // Case-insensitive
+                  },
+                },
+                {
+                  recipe: {
+                    $regex: search, // Search by recipe
+                    $options: "i", // Case-insensitive
+                  },
+                },
+                {
+                  category: {
+                    $regex: search, // Search by category
+                    $options: "i", // Case-insensitive
+                  },
+                },
+              ],
+            },
+          },
+        ]
+      : []),
 
     {
       $lookup: {
@@ -33,7 +81,7 @@ const getMyRecipeFromDb = async (userData: JwtPayload) => {
       },
     },
     {
-      $unwind: "$customer", // Unwind to get the single customer object (since each recipe has one customer)
+      $unwind: "$customer", // Unwind to get the single customer object
     },
     {
       $lookup: {
@@ -104,19 +152,69 @@ const getMyRecipeFromDb = async (userData: JwtPayload) => {
         customer: 1, // Include the populated customer details for the recipe
       },
     },
-  ]);
 
-  return recipe;
+    // Define sorting conditions separately
+  ])
+    .sort(sort || "-createdAt")
+    .skip((Number(currentPage) - 1) * Number(pageSize))
+    .limit(Number(pageSize));
+
+  const allCategory = (await Recipe.find()).map((i) => i.category);
+  const uniqueCategories = [...new Set(allCategory)];
+
+  console.log(recipe, uniqueCategories, totalRecipes);
+  return { recipe, allCategory: uniqueCategories, total: totalRecipes };
 };
 
-const getAllRecipeFromDb = async () => {
+const getAllRecipeFromDb = async (
+  search: string,
+  sort: string,
+  category: string
+) => {
+  const matchConditions: any = {
+    isDeleted: false,
+    isPublished: true,
+  };
+
+  // Add category filter if it's provided
+  if (category) {
+    matchConditions.category = category;
+  }
+
   const recipes = await Recipe.aggregate([
     {
-      $match: {
-        isDeleted: false,
-        isPublished: true,
-      },
+      $match: matchConditions,
     },
+    // Add search filter if 'search' is provided
+    ...(search
+      ? [
+          {
+            $match: {
+              $or: [
+                {
+                  title: {
+                    $regex: search, // Search by title
+                    $options: "i", // Case-insensitive
+                  },
+                },
+                {
+                  recipe: {
+                    $regex: search, // Search by recipe
+                    $options: "i", // Case-insensitive
+                  },
+                },
+                {
+                  category: {
+                    $regex: search, // Search by category
+                    $options: "i", // Case-insensitive
+                  },
+                },
+              ],
+            },
+          },
+        ]
+      : []),
+
     {
       $lookup: {
         from: "customers", // Join with the 'customers' collection
@@ -197,9 +295,11 @@ const getAllRecipeFromDb = async () => {
         customer: 1, // Include the populated customer details for the recipe
       },
     },
-  ]);
+  ]).sort(sort || "-createdAt");
+  const allCategory = (await Recipe.find()).map((i) => i.category);
+  const uniqueCategories = [...new Set(allCategory)];
 
-  return recipes;
+  return { recipes, allCategory: uniqueCategories };
 };
 
 const recipeDetailsFromDb = async (id: string, authEmail: string) => {
@@ -300,7 +400,7 @@ const recipeDetailsFromDb = async (id: string, authEmail: string) => {
         followerId.equals(findAuthData?._id)
       )
     : false;
-  console.log({ ...recipe[0], isFollower });
+  console.log(JSON.stringify(recipe[0]));
 
   return { ...recipe[0], isFollower };
 };
@@ -473,6 +573,104 @@ const unpublishAdminRecipe = async (rId: string) => {
   }
 };
 
+const getTopRecipesByLikes = async () => {
+  const topRecipes = await Recipe.aggregate([
+    {
+      $match: {
+        isDeleted: false,
+      },
+    },
+    {
+      $lookup: {
+        from: "customers", // Join with the 'customers' collection
+        localField: "customer", // Field in 'Recipe' collection
+        foreignField: "_id", // Field in 'customers' collection
+        as: "customer", // Name the output field
+      },
+    },
+    {
+      $unwind: "$customer", // Unwind to get the single customer object
+    },
+    {
+      $lookup: {
+        from: "ratings", // Look up ratings collection
+        localField: "_id",
+        foreignField: "recipeId",
+        as: "ratings",
+      },
+    },
+    {
+      $lookup: {
+        from: "customers", // Look up customers again for rating's customer
+        localField: "ratings.customerId",
+        foreignField: "_id",
+        as: "ratingCustomers",
+      },
+    },
+    {
+      $addFields: {
+        totalLikes: {
+          $size: {
+            $filter: {
+              input: "$ratings",
+              as: "rating",
+              cond: { $eq: ["$$rating.isLiked", true] },
+            },
+          },
+        },
+        totalDislikes: {
+          $size: {
+            $filter: {
+              input: "$ratings",
+              as: "rating",
+              cond: { $eq: ["$$rating.isDisliked", true] },
+            },
+          },
+        },
+        averageRating: { $avg: "$ratings.rating" },
+        comments: {
+          $map: {
+            input: "$ratings",
+            as: "rating",
+            in: {
+              userEmail: {
+                $arrayElemAt: [
+                  "$ratingCustomers.email",
+                  {
+                    $indexOfArray: [
+                      "$ratingCustomers._id",
+                      "$$rating.customerId",
+                    ],
+                  },
+                ],
+              },
+              comment: "$$rating.comment",
+            },
+          },
+        },
+      },
+    },
+    {
+      $sort: { totalLikes: -1 }, // Sort by totalLikes in descending order
+    },
+    {
+      $limit: 5, // Limit to top 5 recipes
+    },
+    {
+      $project: {
+        recipe: "$$ROOT",
+        totalLikes: 1,
+        totalDislikes: 1,
+        averageRating: 1,
+        comments: 1,
+        customer: 1,
+      },
+    },
+  ]);
+
+  return topRecipes;
+};
+
 export const recipeService = {
   addRecipeIntoDb,
   getMyRecipeFromDb,
@@ -482,4 +680,5 @@ export const recipeService = {
   getAllRecipeAdminFromDb,
   deleteAdminRecipe,
   unpublishAdminRecipe,
+  getTopRecipesByLikes,
 };

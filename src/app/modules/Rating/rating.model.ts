@@ -19,7 +19,6 @@ const RatingSchema = new Schema<IRating>({
   },
   comment: {
     type: [String],
-    default: [""],
   },
   isLiked: {
     type: Boolean,
