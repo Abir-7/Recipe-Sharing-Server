@@ -26,7 +26,19 @@ const updateAdminProfile = catchAsync(async (req, res) => {
   });
 });
 
+const adminDashboard = catchAsync(async (req, res) => {
+  const result = await adminService.adminDashboard();
+  console.log("hy");
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
+    message: "Admin dashboard data is fetched successfully",
+  });
+});
+
 export const adminController = {
   getAllAdminInfo,
   updateAdminProfile,
+  adminDashboard,
 };

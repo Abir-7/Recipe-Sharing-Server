@@ -6,6 +6,7 @@ import { RecipeRouter } from "../modules/Recipe/reciepe.route";
 import { RatingRouter } from "../modules/Rating/rating.route";
 import { AdminRouter } from "../modules/Admin/admin.route";
 import { PaymentRouter } from "../modules/Payment/payment.route";
+import { ContactRouter } from "../modules/ContactUs/contactus.route";
 
 const router = Router();
 
@@ -17,6 +18,7 @@ const moduleRoutes = [
   { path: "/recipe", route: RecipeRouter },
   { path: "/rating", route: RatingRouter },
   { path: "/payment", route: PaymentRouter },
+  { path: "/contact", route: ContactRouter },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
 export default router;

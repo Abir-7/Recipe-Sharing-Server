@@ -1,0 +1,18 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.RecipeRouter = void 0;
+const express_1 = require("express");
+const recipe_controller_1 = require("./recipe.controller");
+const auth_1 = require("../../middleware/auth/auth");
+const router = (0, express_1.Router)();
+router.get("/", recipe_controller_1.recipeController.getAllRecipe);
+router.get("/admin-all-recipe", (0, auth_1.auth)("superAdmin", "admin"), recipe_controller_1.recipeController.getAllAdminRecipe);
+router.post("/add-recipe", (0, auth_1.auth)("user"), recipe_controller_1.recipeController.addRecipe);
+router.get("/top-recipe", recipe_controller_1.recipeController.getTopRecipe);
+router.get("/my-recipe", (0, auth_1.auth)("user"), recipe_controller_1.recipeController.getMyRecipe);
+router.get("/:id", (0, auth_1.auth)("user", "superAdmin", "admin"), recipe_controller_1.recipeController.recipeDetails);
+router.patch("/my-recipe-delete/:rId", (0, auth_1.auth)("user"), recipe_controller_1.recipeController.deleteRecipe);
+router.patch("/recipe/:rId", (0, auth_1.auth)("user"), recipe_controller_1.recipeController.updateRecipe);
+router.patch("/admin-recipe-delete/:rId", (0, auth_1.auth)("superAdmin", "admin"), recipe_controller_1.recipeController.deleteAdminRecipe);
+router.patch("/admin-recipe-publish/:rId", (0, auth_1.auth)("superAdmin", "admin"), recipe_controller_1.recipeController.unpublishAdminRecipe);
+exports.RecipeRouter = router;

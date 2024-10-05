@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CustomerRoute = void 0;
+const express_1 = require("express");
+const customer_controller_1 = require("./customer.controller");
+const auth_1 = require("../../middleware/auth/auth");
+const router = (0, express_1.Router)();
+router.get("/top-follower", customer_controller_1.customerController.userWithTopFollower);
+router.get("/all-customer", (0, auth_1.auth)("admin", "superAdmin"), customer_controller_1.customerController.getAllCustomerInfo);
+router.get("/dashboard", (0, auth_1.auth)("user"), customer_controller_1.customerController.userDashboard);
+router.patch("/follow-user", (0, auth_1.auth)("user"), customer_controller_1.customerController.followUser);
+router.patch("/unfollow-user", (0, auth_1.auth)("user"), customer_controller_1.customerController.unfollowUser);
+exports.CustomerRoute = router;

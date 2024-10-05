@@ -1,0 +1,22 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.UserRouter = void 0;
+const express_1 = require("express");
+const user_controller_1 = require("./user.controller");
+const admin_zodValidation_1 = require("../Admin/admin.zodValidation");
+const validationMiddleware_1 = __importDefault(require("../../middleware/validationMiddleware"));
+const customer_zodValidation_1 = require("../Customer/customer.zodValidation");
+const auth_1 = require("../../middleware/auth/auth");
+const router = (0, express_1.Router)();
+router.get("/me", (0, auth_1.auth)("user"), user_controller_1.userController.meData);
+router.post("/signup", (0, validationMiddleware_1.default)(customer_zodValidation_1.zodCustomerSchema), user_controller_1.userController.createCustomer);
+router.post("/create-admin", (0, auth_1.auth)("admin", "superAdmin"), (0, validationMiddleware_1.default)(admin_zodValidation_1.zodAdminSchema), user_controller_1.userController.createAdmin);
+router.patch("/upate-profile", (0, validationMiddleware_1.default)(customer_zodValidation_1.zodCustomerUpdateSchema), (0, auth_1.auth)("user"), user_controller_1.userController.updateProfile);
+router.patch("/set-pass", user_controller_1.userController.setNewPassword);
+router.patch("/update-pass", (0, auth_1.auth)("user"), user_controller_1.userController.passwordUpdate);
+router.patch("/block-user/:id", (0, auth_1.auth)("admin", "superAdmin"), user_controller_1.userController.blockProfile);
+router.patch("/delete-user/:id", (0, auth_1.auth)("admin", "superAdmin"), user_controller_1.userController.deleteProfile);
+exports.UserRouter = router;

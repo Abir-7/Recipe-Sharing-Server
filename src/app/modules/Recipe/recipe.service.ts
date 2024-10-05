@@ -6,13 +6,35 @@ import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
 import { IRecipe } from "./recipe.interface";
 
+const updateRecipeIntoDb = async (
+  authData: JwtPayload,
+  rData: Partial<IRecipe>,
+  rId: string
+) => {
+  console.log(rData);
+  const customerData = await Customer.findOne({ email: authData.email });
+  if (!customerData) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Cant update Data");
+  }
+  const result = await Recipe.findOneAndUpdate(
+    {
+      _id: rId,
+      customer: customerData?._id,
+    },
+    rData,
+    { new: true }
+  );
+
+  return result;
+};
+
 const addRecipeIntoDb = async (
   userData: JwtPayload,
   recipe: Partial<IRecipe>
 ) => {
   const customerData = await Customer.findOne({ email: userData.email });
   const data = { ...recipe, customer: customerData?._id };
-  console.log(data);
+
   const result = await Recipe.create(data);
   return result;
 };
@@ -162,14 +184,15 @@ const getMyRecipeFromDb = async (
   const allCategory = (await Recipe.find()).map((i) => i.category);
   const uniqueCategories = [...new Set(allCategory)];
 
-  console.log(recipe, uniqueCategories, totalRecipes);
   return { recipe, allCategory: uniqueCategories, total: totalRecipes };
 };
 
 const getAllRecipeFromDb = async (
   search: string,
   sort: string,
-  category: string
+  category: string,
+  page: string,
+  limit: string
 ) => {
   const matchConditions: any = {
     isDeleted: false,
@@ -180,6 +203,8 @@ const getAllRecipeFromDb = async (
   if (category) {
     matchConditions.category = category;
   }
+
+  const totalRecipes = await Recipe.countDocuments(matchConditions);
 
   const recipes = await Recipe.aggregate([
     {
@@ -295,11 +320,15 @@ const getAllRecipeFromDb = async (
         customer: 1, // Include the populated customer details for the recipe
       },
     },
-  ]).sort(sort || "-createdAt");
+  ])
+    .sort(sort || "-createdAt")
+    .limit(Number(page) * Number(limit));
+
+  console.log(page, limit);
   const allCategory = (await Recipe.find()).map((i) => i.category);
   const uniqueCategories = [...new Set(allCategory)];
 
-  return { recipes, allCategory: uniqueCategories };
+  return { recipes, allCategory: uniqueCategories, total: totalRecipes };
 };
 
 const recipeDetailsFromDb = async (id: string, authEmail: string) => {
@@ -400,7 +429,6 @@ const recipeDetailsFromDb = async (id: string, authEmail: string) => {
         followerId.equals(findAuthData?._id)
       )
     : false;
-  console.log(JSON.stringify(recipe[0]));
 
   return { ...recipe[0], isFollower };
 };
@@ -681,4 +709,5 @@ export const recipeService = {
   deleteAdminRecipe,
   unpublishAdminRecipe,
   getTopRecipesByLikes,
+  updateRecipeIntoDb,
 };

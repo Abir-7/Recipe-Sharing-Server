@@ -2,6 +2,25 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { recipeService } from "./recipe.service";
 
+const updateRecipe = catchAsync(async (req, res) => {
+  const userData = req.user;
+  const { rId } = req.params;
+  const recipeData = req.body;
+
+  const result = await recipeService.updateRecipeIntoDb(
+    userData,
+    recipeData,
+    rId
+  );
+
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
+    message: "Recipe added successfully",
+  });
+});
+
 const addRecipe = catchAsync(async (req, res) => {
   const userData = req.user;
   const recipe = req.body;
@@ -53,12 +72,22 @@ const getAllRecipe = catchAsync(async (req, res) => {
     search = "",
     sort = "",
     category = "",
+    page,
+    limit,
   } = req.query as {
     search?: string;
     sort?: string;
     category?: string;
+    page: string;
+    limit: string;
   };
-  const result = await recipeService.getAllRecipeFromDb(search, sort, category);
+  const result = await recipeService.getAllRecipeFromDb(
+    search,
+    sort,
+    category,
+    page,
+    limit
+  );
   sendResponse(res, {
     data: result,
     statusCode: 200,
@@ -141,4 +170,5 @@ export const recipeController = {
   getAllAdminRecipe,
   unpublishAdminRecipe,
   getTopRecipe,
+  updateRecipe,
 };

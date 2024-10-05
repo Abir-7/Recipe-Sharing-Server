@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
 import { User } from "../User/user.model";
 import { Admin } from "./admin.model";
+import { Recipe } from "../Recipe/recipe.model";
 
 const getAllAdminFromDb = async () => {
   const result = await Admin.aggregate([
@@ -59,7 +60,29 @@ const adminProfileUpdate = async (
   return data;
 };
 
+const adminDashboard = async () => {
+  const totalUser = await User.find({
+    isblocked: false,
+    isDeleted: false,
+    role: "user",
+  }).countDocuments();
+
+  const totalAdmin = await User.find({
+    isblocked: false,
+    isDeleted: false,
+    role: "admin",
+  }).countDocuments();
+
+  const totalPost = await Recipe.find({
+    isDeleted: false,
+    isPublished: true,
+  }).countDocuments();
+
+  return { totalAdmin, totalUser, totalPost };
+};
+
 export const adminService = {
   getAllAdminFromDb,
   adminProfileUpdate,
+  adminDashboard,
 };

@@ -26,6 +26,7 @@ router.patch(
   auth("user"),
   recipeController.deleteRecipe
 );
+router.patch("/recipe/:rId", auth("user"), recipeController.updateRecipe);
 router.patch(
   "/admin-recipe-delete/:rId",
   auth("superAdmin", "admin"),

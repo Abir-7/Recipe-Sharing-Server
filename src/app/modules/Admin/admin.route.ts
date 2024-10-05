@@ -13,4 +13,10 @@ router.patch(
   auth("superAdmin"),
   adminController.updateAdminProfile
 );
+
+router.get(
+  "/dashboard",
+  auth("superAdmin", "admin"),
+  adminController.adminDashboard
+);
 export const AdminRouter = router;
