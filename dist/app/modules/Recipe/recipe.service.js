@@ -19,7 +19,6 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
 const http_status_1 = __importDefault(require("http-status"));
 const updateRecipeIntoDb = (authData, rData, rId) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(rData);
     const customerData = yield customer_model_1.Customer.findOne({ email: authData.email });
     if (!customerData) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Cant update Data");
@@ -296,7 +295,6 @@ const getAllRecipeFromDb = (search, sort, category, page, limit) => __awaiter(vo
     ])
         .sort(sort || "-createdAt")
         .limit(Number(page) * Number(limit));
-    console.log(page, limit);
     const allCategory = (yield recipe_model_1.Recipe.find()).map((i) => i.category);
     const uniqueCategories = [...new Set(allCategory)];
     return { recipes, allCategory: uniqueCategories, total: totalRecipes };

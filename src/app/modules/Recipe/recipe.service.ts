@@ -11,7 +11,6 @@ const updateRecipeIntoDb = async (
   rData: Partial<IRecipe>,
   rId: string
 ) => {
-  console.log(rData);
   const customerData = await Customer.findOne({ email: authData.email });
   if (!customerData) {
     throw new AppError(httpStatus.BAD_REQUEST, "Cant update Data");
@@ -324,7 +323,6 @@ const getAllRecipeFromDb = async (
     .sort(sort || "-createdAt")
     .limit(Number(page) * Number(limit));
 
-  console.log(page, limit);
   const allCategory = (await Recipe.find()).map((i) => i.category);
   const uniqueCategories = [...new Set(allCategory)];
 

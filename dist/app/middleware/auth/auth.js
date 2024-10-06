@@ -26,18 +26,24 @@ const auth = (...userRole) => {
         if (!token) {
             throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "You have no access to this route1");
         }
-        const decoded = jsonwebtoken_1.default.verify(token, config_1.config.jwt_secrete_key);
-        const { role, email } = decoded;
-        const user = yield user_model_1.User.findOne({ email: email });
-        //check user exixt or not
-        if (!user) {
-            throw new AppError_1.default(http_status_1.default.NOT_FOUND, "You have no access to this route2", "");
+        console.log("hit");
+        try {
+            const decoded = jsonwebtoken_1.default.verify(token, config_1.config.jwt_secrete_key);
+            const { role, email } = decoded;
+            const user = yield user_model_1.User.findOne({ email: email });
+            //check user exixt or not
+            if (!user) {
+                throw new AppError_1.default(http_status_1.default.NOT_FOUND, "You have no access to this route2", "");
+            }
+            if (userRole && !userRole.includes(role)) {
+                throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "You have no access to this route3", "");
+            }
+            req.user = decoded;
+            next();
         }
-        if (userRole && !userRole.includes(role)) {
-            throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "You have no access to this route3", "");
+        catch (error) {
+            throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "You have no access to this route");
         }
-        req.user = decoded;
-        next();
     }));
 };
 exports.auth = auth;

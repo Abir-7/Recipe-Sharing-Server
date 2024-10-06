@@ -101,7 +101,7 @@ exports.paymentConfirm = (0, catchAsync_1.default)((req, res) => __awaiter(void 
                       <p  style={{ color: 'red' }} >You have to login again to activate your subscription!</p>
                   </div>
                   <div class="footer">
-                      &copy; 2024 Food-Corner. All rights reserved. <a style="color: white; font-weight: bold;" href='http://localhost:3000'>Home</a>
+                      &copy; 2024 Food-Corner. All rights reserved. <a style="color: white; font-weight: bold;" href='https://recipe-sharing-client.vercel.app'>Home</a>
                   </div>
               </div>
           </body>

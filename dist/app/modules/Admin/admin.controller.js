@@ -38,7 +38,6 @@ const updateAdminProfile = (0, catchAsync_1.default)((req, res) => __awaiter(voi
 }));
 const adminDashboard = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield admin_service_1.adminService.adminDashboard();
-    console.log("hy");
     (0, sendResponse_1.default)(res, {
         data: result,
         statusCode: 200,
