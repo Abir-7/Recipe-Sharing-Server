@@ -21,7 +21,6 @@ export const auth = (...userRole: T_UserRole[]) => {
         "You have no access to this route1"
       );
     }
-    console.log("hit");
 
     try {
       const decoded = jwt.verify(
@@ -52,6 +51,7 @@ export const auth = (...userRole: T_UserRole[]) => {
       req.user = decoded as JwtPayload;
       next();
     } catch (error: any) {
+      console.log("hit");
       throw new AppError(
         httpStatus.UNAUTHORIZED,
         "You have no access to this route"

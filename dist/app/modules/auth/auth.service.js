@@ -88,7 +88,7 @@ const userResetPassLinkGenarator = (userEmail) => __awaiter(void 0, void 0, void
         to: userEmail,
         subject: "Reset pass link",
         text: "Change your pass within 5min",
-        html: `<a href="http://localhost:3000/reset-password?email=${userEmail}&token=${accessToken}">Reset Link</a>
+        html: `<a href="https://recipe-sharing-client.vercel.app/reset-password?email=${userEmail}&token=${accessToken}">Reset Link</a>
   <p>Change your pass within 5min</p>`,
     });
     return accessToken;
