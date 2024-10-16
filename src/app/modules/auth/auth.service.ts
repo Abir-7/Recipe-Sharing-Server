@@ -76,7 +76,7 @@ const userLogin = async (logInData: T_UserLogin) => {
   const accessToken = createToken(
     userJWtData,
     config.jwt_secrete_key as string,
-    config.jwt_secrete_date as string
+    "40d"
   );
 
   return {

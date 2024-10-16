@@ -27,7 +27,7 @@ export const auth = (...userRole: T_UserRole[]) => {
         token,
         config.jwt_secrete_key as string
       ) as JwtPayload;
-
+      console.log(decoded, "decoded");
       const { role, email } = decoded as JwtPayload;
 
       const user = await User.findOne({ email: email });
@@ -51,7 +51,7 @@ export const auth = (...userRole: T_UserRole[]) => {
       req.user = decoded as JwtPayload;
       next();
     } catch (error: any) {
-      console.log("hit");
+      console.log("hit", error);
       throw new AppError(
         httpStatus.UNAUTHORIZED,
         "You have no access to this route"

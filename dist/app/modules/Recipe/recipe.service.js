@@ -42,6 +42,7 @@ const getMyRecipeFromDb = (userData, search, sort, category, currentPage, pageSi
         isDeleted: false,
         isPublished: true,
     };
+    console.log(category, search);
     // Add category filter if it's provided
     if (category) {
         matchConditions.category = category;
@@ -637,7 +638,7 @@ const getTopRecipesByLikes = () => __awaiter(void 0, void 0, void 0, function* (
                 customer: 1,
             },
         },
-    ]);
+    ]).sort("-averageRating");
     return topRecipes;
 });
 exports.recipeService = {

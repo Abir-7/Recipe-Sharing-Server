@@ -53,7 +53,7 @@ const getMyRecipeFromDb = async (
     isDeleted: false,
     isPublished: true,
   };
-
+  console.log(category, search);
   // Add category filter if it's provided
   if (category) {
     matchConditions.category = category;
@@ -692,7 +692,7 @@ const getTopRecipesByLikes = async () => {
         customer: 1,
       },
     },
-  ]);
+  ]).sort("-averageRating");
 
   return topRecipes;
 };

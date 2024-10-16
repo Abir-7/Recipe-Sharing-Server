@@ -28,6 +28,7 @@ const auth = (...userRole) => {
         }
         try {
             const decoded = jsonwebtoken_1.default.verify(token, config_1.config.jwt_secrete_key);
+            console.log(decoded, "decoded");
             const { role, email } = decoded;
             const user = yield user_model_1.User.findOne({ email: email });
             //check user exixt or not
@@ -41,7 +42,7 @@ const auth = (...userRole) => {
             next();
         }
         catch (error) {
-            console.log("hit");
+            console.log("hit", error);
             throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "You have no access to this route");
         }
     }));

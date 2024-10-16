@@ -42,8 +42,8 @@ const getMyRecipe = catchAsync(async (req, res) => {
     search = "",
     sort = "",
     category = "",
-    currentPage = 1,
-    pageSize = 10,
+    currentPage,
+    pageSize,
   } = req.query as {
     search?: string;
     sort?: string;
@@ -51,14 +51,14 @@ const getMyRecipe = catchAsync(async (req, res) => {
     currentPage?: number;
     pageSize?: number;
   };
-
+  console.log(req.query, "gg");
   const result = await recipeService.getMyRecipeFromDb(
     userData,
     search,
     sort,
     category,
-    currentPage,
-    pageSize
+    currentPage as number,
+    pageSize as number
   );
   sendResponse(res, {
     data: result,
@@ -96,8 +96,10 @@ const getAllRecipe = catchAsync(async (req, res) => {
   });
 });
 const recipeDetails = catchAsync(async (req, res) => {
+  console.log("gg");
   const { id } = req.params;
   const authEmail = req.user?.email;
+  console.log(authEmail, "gg");
   const result = await recipeService.recipeDetailsFromDb(id, authEmail);
   sendResponse(res, {
     data: result,

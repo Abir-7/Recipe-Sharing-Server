@@ -64,7 +64,7 @@ const userLogin = (logInData) => __awaiter(void 0, void 0, void 0, function* () 
         hasValidSubscription: hasValidSubscription || false,
     };
     // create token
-    const accessToken = (0, auth_utils_1.createToken)(userJWtData, config_1.config.jwt_secrete_key, config_1.config.jwt_secrete_date);
+    const accessToken = (0, auth_utils_1.createToken)(userJWtData, config_1.config.jwt_secrete_key, "40d");
     return {
         accessToken: accessToken,
         user: {

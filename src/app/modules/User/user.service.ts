@@ -16,7 +16,7 @@ import { verifyToken } from "../../utils/jwtUtils";
 const createCustomerIntoDb = async (data: ICustomer, password: string) => {
   const user: Partial<IUser> = {};
   const session = await mongoose.startSession();
-
+  console.log(data);
   try {
     session.startTransaction();
     user.email = data.email;

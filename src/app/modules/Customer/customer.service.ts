@@ -98,7 +98,11 @@ const userDashboardData = async (mineId: string) => {
     throw new Error("User not Found");
   }
 
-  const myRacipe = await Recipe.find({ customer: mydata._id });
+  const myRacipe = await Recipe.find({
+    customer: mydata._id,
+    isDeleted: false,
+  });
+  console.log(myRacipe);
   return { myRacipe, mydata };
 };
 

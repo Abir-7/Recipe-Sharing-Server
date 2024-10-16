@@ -25,6 +25,7 @@ const jwtUtils_1 = require("../../utils/jwtUtils");
 const createCustomerIntoDb = (data, password) => __awaiter(void 0, void 0, void 0, function* () {
     const user = {};
     const session = yield mongoose_1.default.startSession();
+    console.log(data);
     try {
         session.startTransaction();
         user.email = data.email;

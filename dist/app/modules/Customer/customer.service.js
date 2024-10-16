@@ -83,7 +83,11 @@ const userDashboardData = (mineId) => __awaiter(void 0, void 0, void 0, function
     if (!mydata) {
         throw new Error("User not Found");
     }
-    const myRacipe = yield recipe_model_1.Recipe.find({ customer: mydata._id });
+    const myRacipe = yield recipe_model_1.Recipe.find({
+        customer: mydata._id,
+        isDeleted: false,
+    });
+    console.log(myRacipe);
     return { myRacipe, mydata };
 });
 const getTopFollowerCustomer = () => __awaiter(void 0, void 0, void 0, function* () {

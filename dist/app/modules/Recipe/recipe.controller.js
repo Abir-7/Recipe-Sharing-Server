@@ -42,7 +42,8 @@ const addRecipe = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void
 const getMyRecipe = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userData = req.user;
     // Extract search, sort, and category from query parameters
-    const { search = "", sort = "", category = "", currentPage = 1, pageSize = 10, } = req.query;
+    const { search = "", sort = "", category = "", currentPage, pageSize, } = req.query;
+    console.log(req.query, "gg");
     const result = yield recipe_service_1.recipeService.getMyRecipeFromDb(userData, search, sort, category, currentPage, pageSize);
     (0, sendResponse_1.default)(res, {
         data: result,
@@ -63,8 +64,10 @@ const getAllRecipe = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
 }));
 const recipeDetails = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
+    console.log("gg");
     const { id } = req.params;
     const authEmail = (_a = req.user) === null || _a === void 0 ? void 0 : _a.email;
+    console.log(authEmail, "gg");
     const result = yield recipe_service_1.recipeService.recipeDetailsFromDb(id, authEmail);
     (0, sendResponse_1.default)(res, {
         data: result,
