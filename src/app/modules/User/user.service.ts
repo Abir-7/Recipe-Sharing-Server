@@ -10,38 +10,76 @@ import { Admin } from "../Admin/admin.model";
 import bcrypt from "bcrypt";
 import { config } from "../../config";
 
-import jwt, { JwtPayload } from "jsonwebtoken";
+import { JwtPayload } from "jsonwebtoken";
 import { verifyToken } from "../../utils/jwtUtils";
 
-const createCustomerIntoDb = async (data: ICustomer, password: string) => {
-  const user: Partial<IUser> = {};
-  const session = await mongoose.startSession();
-  console.log(data);
+// const createCustomerIntoDb2 = async (data: any, password: string) => {
+//   const user: Partial<IUser> = {};
+//   const session = await mongoose.startSession();
+//   try {
+//     session.startTransaction();
+//     console.log(data);
+
+//     // Set user fields
+//     user.email = data.email;
+//     user.password = password;
+
+//     // Create user
+//     const userData = await User.create([user], { session });
+//     if (!userData.length) {
+//       throw new AppError(httpStatus.BAD_REQUEST, "Failed to create user");
+//     }
+
+//     // Set the created user ID to the customer data
+//     data.user = userData[0]._id;
+
+//     // Create customer
+//     const result = await Customer.create([data], { session });
+//     if (!result.length) {
+//       throw new AppError(httpStatus.BAD_REQUEST, "Failed to create customer");
+//     }
+
+//     // Commit transaction and end session
+//     await session.commitTransaction();
+//     return result;
+//   } catch (error) {
+//     // Abort transaction and rethrow error
+//     await session.abortTransaction();
+//     throw error;
+//   } finally {
+//     await session.endSession();
+//   }
+// };
+
+const createCustomerIntoDb = async (data: any, password: string) => {
   try {
-    session.startTransaction();
-    user.email = data.email;
-    user.password = password;
-    const userData = await User.create([user], { session });
+    console.log(data);
 
-    if (!userData.length) {
+    // Create user data
+    const user: Partial<IUser> = {
+      email: data.email,
+      password: password,
+    };
+
+    // Create user (without session/transaction)
+    const userData = await User.create(user);
+    if (!userData) {
       throw new AppError(httpStatus.BAD_REQUEST, "Failed to create user");
     }
 
-    data.user = userData[0]._id;
-    const result = await Customer.create([data], { session });
+    // Set the created user ID to the customer data
+    data.user = userData._id;
 
-    if (!userData.length) {
-      throw new AppError(httpStatus.BAD_REQUEST, "Failed to create user");
+    // Create customer (without session/transaction)
+    const result = await Customer.create(data);
+    if (!result) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to create customer");
     }
 
-    await session.commitTransaction();
-    await session.endSession();
+    // Return result
     return result;
-    //eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    await session.abortTransaction();
-    await session.endSession();
-    throw new Error(error);
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -182,17 +220,26 @@ const blockUserProfile = async (id: string) => {
     throw new AppError(httpStatus.BAD_REQUEST, "User not Found");
   }
   if (isUserExist.isblocked) {
-    throw new AppError(httpStatus.BAD_REQUEST, "User already blocked");
-  }
-  const data = await User.findOneAndUpdate(
-    {
-      _id: id,
-    },
-    { isblocked: true },
-    { new: true }
-  );
+    const data = await User.findOneAndUpdate(
+      {
+        _id: id,
+      },
+      { isblocked: false },
+      { new: true }
+    );
 
-  return data;
+    return data;
+  } else {
+    const data = await User.findOneAndUpdate(
+      {
+        _id: id,
+      },
+      { isblocked: true },
+      { new: true }
+    );
+
+    return data;
+  }
 };
 
 const deletUserProfileDelet = async (id: string) => {

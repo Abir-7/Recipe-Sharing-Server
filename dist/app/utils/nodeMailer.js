@@ -23,7 +23,7 @@ dotenv_1.default.config();
 const transporter = nodemailer_1.default.createTransport({
     host: "smtp.gmail.com",
     port: 587,
-    secure: config_1.config.node_env === "production",
+    secure: false,
     auth: {
         user: config_1.config.user_email, // Type assertion
         pass: config_1.config.email_pass, // Type assertion

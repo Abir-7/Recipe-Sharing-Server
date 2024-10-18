@@ -94,6 +94,7 @@ const userResetPassLinkGenarator = async (userEmail: string) => {
   if (!findUser) {
     throw new AppError(httpStatus.BAD_REQUEST, "User not found");
   }
+
   const accessToken = createToken(
     {
       email: userEmail,
@@ -103,7 +104,7 @@ const userResetPassLinkGenarator = async (userEmail: string) => {
     "5m"
   );
   // { to, subject, text, html }
-  sendMail({
+  await sendMail({
     to: userEmail,
     subject: "Reset pass link",
     text: "Change your pass within 5min",
@@ -111,7 +112,7 @@ const userResetPassLinkGenarator = async (userEmail: string) => {
   <p>Change your pass within 5min</p>`,
   });
 
-  return accessToken;
+  return "";
 };
 
 export const AuthService = {

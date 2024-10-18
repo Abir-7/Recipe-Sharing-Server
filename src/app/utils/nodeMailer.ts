@@ -18,7 +18,7 @@ interface EmailOptions {
 const transporter: Transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
-  secure: config.node_env === "production",
+  secure: false,
   auth: {
     user: config.user_email as string, // Type assertion
     pass: config.email_pass as string, // Type assertion
@@ -35,7 +35,7 @@ transporter.verify(function (error, success) {
 });
 
 // Send email utility function
-export const sendMail = async (emailOptions: EmailOptions): Promise<void> => {
+export const sendMail = async (emailOptions: EmailOptions) => {
   const { to, subject, text, html } = emailOptions;
 
   try {

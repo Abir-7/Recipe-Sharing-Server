@@ -22,32 +22,63 @@ const admin_model_1 = require("../Admin/admin.model");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const config_1 = require("../../config");
 const jwtUtils_1 = require("../../utils/jwtUtils");
+// const createCustomerIntoDb2 = async (data: any, password: string) => {
+//   const user: Partial<IUser> = {};
+//   const session = await mongoose.startSession();
+//   try {
+//     session.startTransaction();
+//     console.log(data);
+//     // Set user fields
+//     user.email = data.email;
+//     user.password = password;
+//     // Create user
+//     const userData = await User.create([user], { session });
+//     if (!userData.length) {
+//       throw new AppError(httpStatus.BAD_REQUEST, "Failed to create user");
+//     }
+//     // Set the created user ID to the customer data
+//     data.user = userData[0]._id;
+//     // Create customer
+//     const result = await Customer.create([data], { session });
+//     if (!result.length) {
+//       throw new AppError(httpStatus.BAD_REQUEST, "Failed to create customer");
+//     }
+//     // Commit transaction and end session
+//     await session.commitTransaction();
+//     return result;
+//   } catch (error) {
+//     // Abort transaction and rethrow error
+//     await session.abortTransaction();
+//     throw error;
+//   } finally {
+//     await session.endSession();
+//   }
+// };
 const createCustomerIntoDb = (data, password) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = {};
-    const session = yield mongoose_1.default.startSession();
-    console.log(data);
     try {
-        session.startTransaction();
-        user.email = data.email;
-        user.password = password;
-        const userData = yield user_model_1.User.create([user], { session });
-        if (!userData.length) {
+        console.log(data);
+        // Create user data
+        const user = {
+            email: data.email,
+            password: password,
+        };
+        // Create user (without session/transaction)
+        const userData = yield user_model_1.User.create(user);
+        if (!userData) {
             throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Failed to create user");
         }
-        data.user = userData[0]._id;
-        const result = yield customer_model_1.Customer.create([data], { session });
-        if (!userData.length) {
-            throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Failed to create user");
+        // Set the created user ID to the customer data
+        data.user = userData._id;
+        // Create customer (without session/transaction)
+        const result = yield customer_model_1.Customer.create(data);
+        if (!result) {
+            throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Failed to create customer");
         }
-        yield session.commitTransaction();
-        yield session.endSession();
+        // Return result
         return result;
-        //eslint-disable-next-line @typescript-eslint/no-explicit-any
     }
     catch (error) {
-        yield session.abortTransaction();
-        yield session.endSession();
-        throw new Error(error);
+        throw error;
     }
 });
 const createAdminIntoDb = (data, password) => __awaiter(void 0, void 0, void 0, function* () {
@@ -137,12 +168,17 @@ const blockUserProfile = (id) => __awaiter(void 0, void 0, void 0, function* () 
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "User not Found");
     }
     if (isUserExist.isblocked) {
-        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "User already blocked");
+        const data = yield user_model_1.User.findOneAndUpdate({
+            _id: id,
+        }, { isblocked: false }, { new: true });
+        return data;
     }
-    const data = yield user_model_1.User.findOneAndUpdate({
-        _id: id,
-    }, { isblocked: true }, { new: true });
-    return data;
+    else {
+        const data = yield user_model_1.User.findOneAndUpdate({
+            _id: id,
+        }, { isblocked: true }, { new: true });
+        return data;
+    }
 });
 const deletUserProfileDelet = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const isUserExist = yield user_model_1.User.findOne({

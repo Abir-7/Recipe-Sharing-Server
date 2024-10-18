@@ -84,14 +84,14 @@ const userResetPassLinkGenarator = (userEmail) => __awaiter(void 0, void 0, void
         role: "",
     }, config_1.config.jwt_secrete_key, "5m");
     // { to, subject, text, html }
-    (0, nodeMailer_1.sendMail)({
+    yield (0, nodeMailer_1.sendMail)({
         to: userEmail,
         subject: "Reset pass link",
         text: "Change your pass within 5min",
         html: `<a href="https://recipe-sharing-client.vercel.app/reset-password?email=${userEmail}&token=${accessToken}">Reset Link</a>
   <p>Change your pass within 5min</p>`,
     });
-    return accessToken;
+    return "";
 });
 exports.AuthService = {
     userLogin,

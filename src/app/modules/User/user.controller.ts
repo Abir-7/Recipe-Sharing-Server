@@ -89,12 +89,14 @@ const updateProfile = catchAsync(async (req, res) => {
 const blockProfile = catchAsync(async (req, res) => {
   const id = req.params.id;
   const result = await userService.blockUserProfile(id);
-
+  console.log(result);
   sendResponse(res, {
     data: result,
     statusCode: 200,
     success: true,
-    message: "User blocked successfully",
+    message: result?.isblocked
+      ? "User blocked successfully"
+      : "User unblocked successfully",
   });
 });
 const deleteProfile = catchAsync(async (req, res) => {

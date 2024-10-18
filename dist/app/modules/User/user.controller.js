@@ -81,11 +81,14 @@ const updateProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
 const blockProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     const result = yield user_service_1.userService.blockUserProfile(id);
+    console.log(result);
     (0, sendResponse_1.default)(res, {
         data: result,
         statusCode: 200,
         success: true,
-        message: "User blocked successfully",
+        message: (result === null || result === void 0 ? void 0 : result.isblocked)
+            ? "User blocked successfully"
+            : "User unblocked successfully",
     });
 }));
 const deleteProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
